@@ -3,7 +3,8 @@
 An implementation of Scalable Evaluation and Improvement of Document Set Expansion via Neural Positive-Unlabeled Learning without AllenNLP  
 Authors: Alon Jacovi, Gang Niu, Yoav Goldberg, Masashi Sugiyama  
 Original Implementation: <https://github.com/alonjacovi/document-set-expansion-pu>  
-Paper: <https://arxiv.org/abs/1910.13339>  
+Paper: <https://arxiv.org/abs/1910.13339>
+Data Available at:http://nlp.biu.ac.il/~jacovia/pubmed-dse-15.zip
 Feel free to contact me or Alon: Qiuyi.chen2002@student.xjtlu.edu or alonjacovi@gmail.com:)  
 ## Abstract
 

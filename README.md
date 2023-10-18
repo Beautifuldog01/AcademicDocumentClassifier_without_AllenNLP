@@ -15,13 +15,13 @@ This implementation diverges from the original repository in key ways:
 
 ## Package requirements
 You may use ```pip install -r requirements``` to obatain these packages
-torch==2.0.1
-transformers==4.31.0
-numpy==1.25.2
-nltk==3.8.1
-tqdm==4.66.1
-matplotlib==3.7.2
-tensorboard==2.14.1
+torch==2.0.1  
+transformers==4.31.0  
+numpy==1.25.2  
+nltk==3.8.1  
+tqdm==4.66.1  
+matplotlib==3.7.2  
+tensorboard==2.14.1  
 
 ## Cite the Original Work
 ```

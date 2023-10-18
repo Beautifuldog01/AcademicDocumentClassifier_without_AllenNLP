@@ -18,6 +18,7 @@ Data file follows like this below.
 
 ## Package requirements
 You may use ```pip install -r requirements``` to obatain these packages.  
+```
 torch==2.0.1  
 transformers==4.31.0  
 numpy==1.25.2  
@@ -25,6 +26,17 @@ nltk==3.8.1
 tqdm==4.66.1  
 matplotlib==3.7.2  
 tensorboard==2.14.1  
+```
+## Running the Model
+Clone the repository and navigate to the project directory: 
+```
+git clone https://github.com/Beautifuldog01/AcademicDocumentClassifier_without_AllenNLP.git
+```
+Then cd to the directory and run:
+```
+python main_meta_CNN.py
+```
+
 
 ## Cite the Original Work
 ```

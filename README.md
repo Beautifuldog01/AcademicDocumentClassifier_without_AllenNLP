@@ -1,6 +1,6 @@
 # AcademicDocumentClassifier_without_AllenNLP
 An implementation of Scalable Evaluation and Improvement of Document Set Expansion via Neural Positive-Unlabeled Learning without AllenNLP  
-Original Authors: Alon Jacovi, Gang Niu, Yoav Goldberg, Masashi Sugiyama  
+Authors: Alon Jacovi, Gang Niu, Yoav Goldberg, Masashi Sugiyama  
 Original Implementation: https://github.com/alonjacovi/document-set-expansion-pu  
 Paper: https://arxiv.org/abs/1910.13339  
 

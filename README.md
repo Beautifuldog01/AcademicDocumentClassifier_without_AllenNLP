@@ -81,6 +81,8 @@ experiments = [
     "data/pubmed-dse/L20/D000818.D001921.D051381",
     "data/pubmed-dse/L20/D006435.D007676.D008875",
 ]
+
+root_dir = experiments[0]
 ```
 
 To conduct different experiments, you can change the index of the 'experiments' list from 0 to 5.  

@@ -2,7 +2,8 @@
 An implementation of Scalable Evaluation and Improvement of Document Set Expansion via Neural Positive-Unlabeled Learning without AllenNLP  
 Authors: Alon Jacovi, Gang Niu, Yoav Goldberg, Masashi Sugiyama  
 Original Implementation: https://github.com/alonjacovi/document-set-expansion-pu  
-Paper: https://arxiv.org/abs/1910.13339  
+Paper: https://arxiv.org/abs/1910.13339
+Data available at: https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9xN3VO/view?usp=sharing  
 
 ## Abstract
 This repository contains a non-AllenNLP implementation of the original paper which proposes an approach to document set expansion using Positive-Unlabeled Learning. The problem is framed as an Information Retrieval (IR) task where a small set of cohesive-topic documents serves as a query to retrieve additional documents from a large corpus.

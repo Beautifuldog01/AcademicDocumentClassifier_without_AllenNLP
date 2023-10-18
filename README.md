@@ -20,6 +20,27 @@ Data file follows like this below.
    <img width="396" alt="image" src="https://github.com/Beautifuldog01/AcademicDocumentClassifier_without_AllenNLP/assets/40363660/45d39ced-85a4-461f-a54e-1bd08a096184">  
 Data available at: <https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9xN3VO/view?usp=sharing>
 
+By runing ```tree -L 2``` command, you can see the directory structure like this below.  
+
+```
+(py310tc2) ➜  AcademicDocumentClassifier_without_AllenNLP git:(main) tree -L 2
+.
+├── data
+│   └── pubmed-dse
+├── dataset_pubmed.py
+├── LICENSE
+├── main_meta_CNN.py
+├── models
+│   └── nnPUCNN
+├── __pycache__
+│   ├── dataset_pubmed.cpython-310.pyc
+│   └── utils.cpython-310.pyc
+├── README.md
+├── requirements.txt
+├── runs
+│   └── nnPU_CNN
+└── utils.py
+```
 ## Package requirements
 
 You may use ```pip install -r requirements.txt``` to obatain these packages.  

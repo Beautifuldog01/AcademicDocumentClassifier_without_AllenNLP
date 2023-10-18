@@ -98,9 +98,9 @@ class BiDataset(torch.utils.data.Dataset):
         return len(self.data)
 
 
-def normalization(data):
-    _range = np.max(data) - np.min(data)
-    return (data - np.min(data)) / _range
+    def normalization(data):
+        _range = np.max(data) - np.min(data)
+        return (data - np.min(data)) / _range
 
 
 class BiDataset_val(torch.utils.data.Dataset):
@@ -116,9 +116,9 @@ class BiDataset_val(torch.utils.data.Dataset):
         return len(self.data)
 
 
-def normalization(data):
-    _range = np.max(data) - np.min(data)
-    return (data - np.min(data)) / _range
+    def normalization(data):
+        _range = np.max(data) - np.min(data)
+        return (data - np.min(data)) / _range
 
 
 class BalancedBatchSampler(Sampler):

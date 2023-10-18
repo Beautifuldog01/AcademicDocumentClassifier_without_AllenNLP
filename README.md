@@ -47,7 +47,6 @@ Then cd to the directory and run:
 
 ```
 python main_meta_CNN.py  --batch_size 64 --num_epochs 100 --lr 0.0001 --prior 0.5
-
 ```
 
 ```

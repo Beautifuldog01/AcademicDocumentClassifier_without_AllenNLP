@@ -11,9 +11,11 @@ This implementation diverges from the original repository in key ways:
 2. The text encoder is implemented using Convolutional Neural Networks (CNN) via the nltk and PyTorch libraries.
 
 ## Cite the Original Work
+```
 @article{jacovi2019scalable,
   title={Scalable Evaluation and Improvement of Document Set Expansion via Neural Positive-Unlabeled Learning},
   author={Jacovi, Alon and Niu, Gang and Goldberg, Yoav and Sugiyama, Masashi},
   journal={arXiv preprint arXiv:1910.13339},
   year={2019}
 }
+```

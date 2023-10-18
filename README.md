@@ -1,24 +1,29 @@
 # AcademicDocumentClassifier_without_AllenNLP
+
 An implementation of Scalable Evaluation and Improvement of Document Set Expansion via Neural Positive-Unlabeled Learning without AllenNLP  
 Authors: Alon Jacovi, Gang Niu, Yoav Goldberg, Masashi Sugiyama  
-Original Implementation: https://github.com/alonjacovi/document-set-expansion-pu  
-Paper: https://arxiv.org/abs/1910.13339  
-Data available at: https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9xN3VO/view?usp=sharing  
+Original Implementation: <https://github.com/alonjacovi/document-set-expansion-pu>  
+Paper: <https://arxiv.org/abs/1910.13339>  
+Data available at: <https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9xN3VO/view?usp=sharing>  
 
 ## Abstract
+
 This repository contains a non-AllenNLP implementation of the original paper which proposes an approach to document set expansion using Positive-Unlabeled Learning. The problem is framed as an Information Retrieval (IR) task where a small set of cohesive-topic documents serves as a query to retrieve additional documents from a large corpus.
 
 ## Implementation Details
+
 This implementation diverges from the original repository in key ways:
 
 1. The entire code is based on PyTorch instead of AllenNLP.
 2. The text encoder is implemented using Convolutional Neural Networks (CNN) via the nltk and PyTorch libraries.  
 Data file follows like this below.  
    <img width="396" alt="image" src="https://github.com/Beautifuldog01/AcademicDocumentClassifier_without_AllenNLP/assets/40363660/45d39ced-85a4-461f-a54e-1bd08a096184">  
-Data available at: https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9xN3VO/view?usp=sharing
+Data available at: <https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9xN3VO/view?usp=sharing>
 
 ## Package requirements
+
 You may use ```pip install -r requirements``` to obatain these packages.  
+
 ```
 torch==2.0.1  
 transformers==4.31.0  
@@ -28,18 +33,25 @@ tqdm==4.66.1
 matplotlib==3.7.2  
 tensorboard==2.14.1  
 ```
+
 ## Running the Model
-Clone the repository and navigate to the project directory: 
+
+Clone the repository and navigate to the project directory:
+
 ```
 git clone https://github.com/Beautifuldog01/AcademicDocumentClassifier_without_AllenNLP.git
-```
-Then cd to the directory and run:
-```
-python main_meta_CNN.py
+cd AcademicDocumentClassifier_without_AllenNLP
 ```
 
+Then cd to the directory and run:
+
+```
+python main_meta_CNN.py  --batch_size 64 --num_epochs 100 --lr 0.0001 --prior 0.5
+
+```
 
 ## Cite the Original Work
+
 ```
 @article{jacovi2019scalable,
   title={Scalable Evaluation and Improvement of Document Set Expansion via Neural Positive-Unlabeled Learning},

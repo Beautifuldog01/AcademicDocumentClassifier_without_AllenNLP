@@ -1,5 +1,6 @@
 import os
 import datetime
+import argparse
 
 import torch
 import numpy as np
@@ -16,7 +17,21 @@ from torch.utils.tensorboard import SummaryWriter
 from dataset_pubmed import *
 from utils import *
 
+parser = argparse.ArgumentParser(description='Run Text Classification Experiments')
+parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training')
+parser.add_argument('--num_epochs', type=int, default=50, help='Number of training epochs')
+parser.add_argument('--lr', type=float, default=0.001, help='Learning rate for the optimizer')
+parser.add_argument('--prior', type=float, default=0.5, help='Prior probability for Non-Negative PU Loss')
+parser.add_argument('--embedding_dim', type=int, default=300, help='Embedding dimension for text classifier')
+parser.add_argument('--models_dir', type=str, default='models', help='Directory to save the models')
+args = parser.parse_args()
 
+batch_size = args.batch_size
+num_epochs = args.num_epochs
+learning_rate = args.lr
+prior = args.prior
+embedding_dim = args.embedding_dim
+models_dir = args.models_dir
 
 experiments = [
     "data/pubmed-dse/L50/D000328.D008875.D015658",
@@ -40,9 +55,6 @@ val_index = all_df.query("ca == 1").index
 val_labels = all_df.query("ca == 1")["label"].values
 test_index = all_df.query("ts == 1").index
 test_labels = all_df.query("ts == 1")["label"].values
-
-
-
 
 
 class NonNegativePULoss(nn.Module):
@@ -93,7 +105,6 @@ word_to_index = {word: index for index, word in enumerate(vocab)}
 all_features = getFeatures(all_df, word_to_index, max_length=500)
 
 
-# Define the neural network class
 class TextClassifier(nn.Module):
     def __init__(self, vocab_size, embedding_dim):
         super(TextClassifier, self).__init__()
@@ -135,11 +146,9 @@ class TextClassifier(nn.Module):
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = TextClassifier(len(vocab), 300).to(device)
+model = TextClassifier(len(vocab), embedding_dim).to(device)
 criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-batch_size = 32
-num_epochs = 50
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 best_va_f1 = 0
 best_ts_f1 = 0
 writer = SummaryWriter("runs/nnPU_CNN")
@@ -158,13 +167,14 @@ test_dataloader = torch.utils.data.DataLoader(
     test_dataset, batch_size=batch_size, shuffle=False
 )
 
-models_dir = os.mkdir("models")
+if not os.path.exists(models_dir):
+    os.makedirs(models_dir)
 model_for_nnpu = os.path.join(models_dir, "nnPUCNN")
 current_date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
 model_for_nnpu = os.path.join(model_for_nnpu, current_date)
 os.makedirs(model_for_nnpu, exist_ok=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-loss_fct = NonNegativePULoss(prior=0.5)
+loss_fct = NonNegativePULoss(prior=prior)
 
 # Training loop
 for epoch in tqdm(range(num_epochs)):

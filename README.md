@@ -85,8 +85,7 @@ experiments = [
 root_dir = experiments[0]
 ```
 
-To conduct different experiments, you can change the index of the 'experiments' list from 0 to 5.  
-Each index corresponds to a different experiment setup defined in the 'experiments' list.  
+To conduct different experiments, you can change the index of the 'experiments' list from 0 to 5. Each index corresponds to a different experiment setup defined in the 'experiments' list.    
 Simply set ```root_dir``` to the desired experiment by changing the index, for example:  
 ```root_dir = experiments[0]```  # This will set the root directory to the first experiment.  
 ```root_dir = experiments[1]```  # This will set the root directory to the second experiment, and so on up to index 5.  

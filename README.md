@@ -19,7 +19,6 @@ This implementation diverges from the original repository in key ways:
 2. The text encoder is implemented using Convolutional Neural Networks (CNN) via the nltk and PyTorch libraries.  
 Data file follows like this below.  
    <img width="396" alt="image" src="https://github.com/Beautifuldog01/AcademicDocumentClassifier_without_AllenNLP/assets/40363660/45d39ced-85a4-461f-a54e-1bd08a096184">  
-Data available at: <https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9xN3VO/view?usp=sharing>
 
 By runing ```tree -L 2``` command, you can see the directory structure like this below.  
 

@@ -4,7 +4,6 @@ An implementation of Scalable Evaluation and Improvement of Document Set Expansi
 Authors: Alon Jacovi, Gang Niu, Yoav Goldberg, Masashi Sugiyama  
 Original Implementation: <https://github.com/alonjacovi/document-set-expansion-pu>  
 Paper: <https://arxiv.org/abs/1910.13339>  
-Data available at: <https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9xN3VO/view?usp=sharing>  
 Feel free to contact me or Alon: Qiuyi.chen2002@student.xjtlu.edu or alonjacovi@gmail.com:)  
 ## Abstract
 

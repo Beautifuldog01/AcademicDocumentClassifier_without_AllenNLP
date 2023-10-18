@@ -22,7 +22,7 @@ Data available at: <https://drive.google.com/file/d/1-FdQnnEUNWPdA6P45ynkUpoBIO9
 
 ## Package requirements
 
-You may use ```pip install -r requirements``` to obatain these packages.  
+You may use ```pip install -r requirements.txt``` to obatain these packages.  
 
 ```
 torch==2.0.1  

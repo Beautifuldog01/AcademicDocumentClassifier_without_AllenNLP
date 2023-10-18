@@ -49,6 +49,8 @@ Then cd to the directory and run:
 python main_meta_CNN.py  --batch_size 64 --num_epochs 100 --lr 0.0001 --prior 0.5
 
 ```
+
+```
 experiments = [
     "data/pubmed-dse/L50/D000328.D008875.D015658",
     "data/pubmed-dse/L50/D000818.D001921.D051381",
@@ -57,12 +59,13 @@ experiments = [
     "data/pubmed-dse/L20/D000818.D001921.D051381",
     "data/pubmed-dse/L20/D006435.D007676.D008875",
 ]
+```
 
 To conduct different experiments, you can change the index of the 'experiments' list from 0 to 5.  
 Each index corresponds to a different experiment setup defined in the 'experiments' list.  
 Simply set 'root_dir' to the desired experiment by changing the index, for example:  
-root_dir = experiments[0]  # This will set the root directory to the first experiment.  
-root_dir = experiments[1]  # This will set the root directory to the second experiment, and so on up to index 5.  
+```root_dir = experiments[0]```  # This will set the root directory to the first experiment.  
+```root_dir = experiments[1]```  # This will set the root directory to the second experiment, and so on up to index 5.  
 
 
 ## Cite the Original Work

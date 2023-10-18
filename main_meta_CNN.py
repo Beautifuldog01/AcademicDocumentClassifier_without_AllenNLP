@@ -1,23 +1,21 @@
 import os
 import datetime
-import itertools
+
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
-from nltk.tokenize import word_tokenize
+
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from collections import Counter
+
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 from dataset_pubmed import *
-from checkpoint import *
-from func import *
 from utils import *
-from nnPU import *
+
 
 
 experiments = [
@@ -44,47 +42,7 @@ test_index = all_df.query("ts == 1").index
 test_labels = all_df.query("ts == 1")["label"].values
 
 
-def getFeatures(data, word_to_index, max_length):
-    all_features = []
 
-    for index in range(len(data)):
-        title_tokens = data.title[index].split()
-        abstract_tokens = data.abstract[index].split()
-
-        # Convert words to indices
-        title_indices = [word_to_index.get(word.lower(), 0) for word in title_tokens]
-        abstract_indices = [
-            word_to_index.get(word.lower(), 0) for word in abstract_tokens
-        ]
-
-        # Pad or truncate
-        title_indices += [0] * (max_length - len(title_indices))
-        title_indices = title_indices[:max_length]
-        abstract_indices += [0] * (max_length - len(abstract_indices))
-        abstract_indices = abstract_indices[:max_length]
-
-        all_features.append((title_indices, abstract_indices))
-
-    return all_features
-
-
-def build_vocab(texts, min_freq=2):
-    """
-    Build vocabulary from a list of texts
-    """
-    tokenized_texts = [word_tokenize(text.lower()) for text in texts]
-    counter = Counter(itertools.chain.from_iterable(tokenized_texts))
-
-    vocab = {
-        word: i + 2
-        for i, (word, freq) in enumerate(counter.items())
-        if freq >= min_freq
-    }
-
-    vocab["<PAD>"] = 0
-    vocab["<UNK>"] = 1
-
-    return vocab
 
 
 class NonNegativePULoss(nn.Module):

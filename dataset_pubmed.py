@@ -22,7 +22,9 @@ def parse_pubmed_json(pubmed_json):
     return title, abstract, true_label, PU_label
 
 
-def load_data(file_path: str, limit: int):# -> tuple[NDArray, NDArray, NDArray, NDArray]:
+def load_data(
+    file_path: str, limit: int
+):  # -> tuple[NDArray, NDArray, NDArray, NDArray]:
     count = 0
     data = {"titles": [], "abstracts": [], "true_labels": [], "PU_labels": []}
 
@@ -46,79 +48,6 @@ def load_data(file_path: str, limit: int):# -> tuple[NDArray, NDArray, NDArray, 
         np.array(data["true_labels"]),
         np.array(data["PU_labels"]),
     )
-
-
-def make_PU(tr, ca, ts) -> pd.DataFrame:
-    # LP1
-    tr_titles, tr_abs, tr_labels, tr_pulabels = load_data(tr, -1)
-    tr_titles = tr_titles[tr_pulabels == 1]
-    tr_abs = tr_abs[tr_pulabels == 1]
-    tr_labels = tr_labels[tr_pulabels == 1]
-    tr_pulabels = tr_pulabels[tr_pulabels == 1]
-    tr_df = pd.DataFrame(
-        {
-            "title": tr_titles,
-            "abstract": tr_abs,
-            "label": tr_labels,
-            "pulabel": tr_pulabels,
-        }
-    )
-    tr_df["tr"] = 1
-    tr_df["ca"] = 0
-    tr_df["ts"] = 0
-
-    # LP2
-    ca_titles, ca_abs, ca_labels, ca_pulabels = load_data(ca, -1)
-    ca_titles = ca_titles[ca_pulabels == 1]
-    ca_abs = ca_abs[ca_pulabels == 1]
-    ca_labels = ca_labels[ca_pulabels == 1]
-    ca_pulabels = ca_pulabels[ca_pulabels == 1]
-    ca_pulabels = 0 * ca_pulabels
-    ca_df = pd.DataFrame(
-        {
-            "title": ca_titles,
-            "abstract": ca_abs,
-            "label": ca_labels,
-            "pulabel": ca_pulabels,
-        }
-    )
-    ca_df["tr"] = 0
-    ca_df["ca"] = 1
-    ca_df["ts"] = 0
-
-    # LP3 + U3
-    ts_titles, ts_abs, ts_labels, ts_pulabels = load_data(ts, -1)
-    ts_pulabels = 0 * ts_pulabels
-    ts_df = pd.DataFrame(
-        {
-            "title": ts_titles,
-            "abstract": ts_abs,
-            "label": ts_labels,
-            "pulabel": ts_pulabels,
-        }
-    )
-    ts_df["tr"] = 0
-    ts_df["ca"] = 0
-    ts_df["ts"] = 1
-
-    all_df = pd.concat([tr_df, ca_df, ts_df]).reset_index(drop=True)
-    # Print the size of the dataframe and the counts of true labels and PU labels
-    print(f"Size of the DataFrame: {all_df.shape}")
-    # print(f"Counts of PU labels: {all_df['pulabel'].value_counts()}")
-    print(f"Size of the DataFrame: {tr_df.shape}")
-    print(f"Counts of true labels in train set: {tr_df['label'].value_counts()}")
-    print(f"Counts of pu labels in train set: {tr_df['pulabel'].value_counts()}")
-    print()
-    print(f"Size of the DataFrame: {ca_df.shape}")
-    print(f"Counts of true labels in valid set: {ca_df['label'].value_counts()}")
-    print(f"Counts of pu labels in valid set: {ca_df['pulabel'].value_counts()}")
-    print()
-    print(f"Size of the DataFrame: {ts_df.shape}")
-    print(f"Counts of true labels in test set: {ts_df['label'].value_counts()}")
-    print(f"Counts of pu labels in test set: {ts_df['pulabel'].value_counts()}")
-    print()
-
-    return all_df
 
 
 def load_and_transform_data(data, tr=0, ca=0, ts=0):

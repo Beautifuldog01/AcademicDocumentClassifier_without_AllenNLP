@@ -18,7 +18,8 @@ parser.add_argument('--batch_size', type=int, default=32, help='Batch size for t
 parser.add_argument('--num_epochs', type=int, default=50, help='Number of training epochs')
 parser.add_argument('--lr', type=float, default=0.001, help='Learning rate for the optimizer')
 parser.add_argument('--prior', type=float, default=0.5, help='Prior probability for Non-Negative PU Loss')
-parser.add_argument('--embedding_dim', type=int, default=300, help='Embedding dimension for text classifier')
+parser.add_argument('--max_length', type=int, default=800, help='Maximum length of the input sequence')
+parser.add_argument('--embedding_dim', type=int, default=50, help='Embedding dimension for text classifier')
 parser.add_argument('--models_dir', type=str, default='models', help='Directory to save the models')
 parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility')
 args = parser.parse_args()
@@ -58,8 +59,8 @@ all_df["combined_text"] = all_df["title"] + " " + all_df["abstract"]
 all_texts = all_df["combined_text"].tolist()
 vocab = build_vocab(all_texts)
 word_to_index = {word: index for index, word in enumerate(vocab)}
-all_features = getFeatures(all_df, word_to_index, max_length=500)
-
+max_length = args.max_length
+all_features = getFeatures(all_df, word_to_index, max_length=max_length)
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

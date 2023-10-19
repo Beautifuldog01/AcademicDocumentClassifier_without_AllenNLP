@@ -45,13 +45,13 @@ class NonNegativePULoss(nn.Module):
 class TextClassifier(nn.Module):
     def __init__(self, vocab_size, embedding_dim):
         super(TextClassifier, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, embedding_dim)
-        self.title_cnn_3 = nn.Conv1d(embedding_dim, 50, 3, padding=1)
-        self.title_cnn_5 = nn.Conv1d(embedding_dim, 50, 5, padding=2)
-        self.abstract_cnn_3 = nn.Conv1d(embedding_dim, 100, 3, padding=1)
-        self.abstract_cnn_5 = nn.Conv1d(embedding_dim, 100, 5, padding=2)
-        self.classifier = nn.Linear(300, 1)
-
+        self.embedding = nn.Embedding(vocab_size, embedding_dim * 6)
+        self.title_cnn_3 = nn.Conv1d(embedding_dim * 6, embedding_dim, 3, padding=1)
+        self.title_cnn_5 = nn.Conv1d(embedding_dim * 6, embedding_dim, 5, padding=2)
+        self.abstract_cnn_3 = nn.Conv1d(embedding_dim * 6, embedding_dim * 2, 3, padding=1)
+        self.abstract_cnn_5 = nn.Conv1d(embedding_dim * 6, embedding_dim * 2, 5, padding=2)
+        self.classifier = nn.Linear(embedding_dim * 6, 1)
+        
     def forward(self, title, abstract):
         title_embed = self.embedding(title)
         abstract_embed = self.embedding(abstract)

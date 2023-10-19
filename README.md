@@ -72,7 +72,7 @@ cd AcademicDocumentClassifier_without_AllenNLP
 Then cd to the directory and run:
 
 ```
-python main_meta_CNN.py  --batch_size 64 --num_epochs 100 --lr 0.0001 --prior 0.5 --seed 42
+python main_meta_CNN.py  --batch_size 64 --num_epochs 100 --embedding_dim 50 --max_length 800 --lr 0.0001 --prior 0.5 --seed 42
 ```
 
 In the file main_meta_CNN.py, you can easily adjust different dataset to experiment by following the instruct below:

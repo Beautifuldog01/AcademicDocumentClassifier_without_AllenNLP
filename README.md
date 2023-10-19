@@ -1,12 +1,14 @@
 # AcademicDocumentClassifier_without_AllenNLP
 
 An implementation of Scalable Evaluation and Improvement of Document Set Expansion via Neural Positive-Unlabeled Learning without AllenNLP  
+
 - Authors: Alon Jacovi, Gang Niu, Yoav Goldberg, Masashi Sugiyama  
 - Original Implementation: <https://github.com/alonjacovi/document-set-expansion-pu>  
 - Paper: <https://arxiv.org/abs/1910.13339>  
 - Data Available at:<http://nlp.biu.ac.il/~jacovia/pubmed-dse-15.zip>
 
-Feel free to contact me or Alon: Qiuyi.chen2002@student.xjtlu.edu or alonjacovi@gmail.com:)  
+Feel free to contact me or Alon: <Qiuyi.chen2002@student.xjtlu.edu> or <alonjacovi@gmail.com>:)  
+
 ## Abstract
 
 This repository contains a non-AllenNLP implementation of the original paper which proposes an approach to document set expansion using Positive-Unlabeled Learning. The problem is framed as an Information Retrieval (IR) task where a small set of cohesive-topic documents serves as a query to retrieve additional documents from a large corpus.  
@@ -43,6 +45,7 @@ By runing ```tree -L 2``` command, you can see the directory structure like this
 │   └── nnPU_CNN
 └── utils.py
 ```
+
 ## Package requirements
 
 You may use ```pip install -r requirements.txt``` to obatain these packages.  
@@ -69,10 +72,11 @@ cd AcademicDocumentClassifier_without_AllenNLP
 Then cd to the directory and run:
 
 ```
-python main_meta_CNN.py  --batch_size 64 --num_epochs 100 --lr 0.0001 --prior 0.5
+python main_meta_CNN.py  --batch_size 64 --num_epochs 100 --lr 0.0001 --prior 0.5 --seed 42
 ```
 
-In the file main_meta_CNN.py, you can easily adjust different dataset to experiment by following the instruct below:      
+In the file main_meta_CNN.py, you can easily adjust different dataset to experiment by following the instruct below:
+
 ```
 experiments = [
     "data/pubmed-dse/L50/D000328.D008875.D015658",
@@ -86,11 +90,10 @@ experiments = [
 root_dir = experiments[0]
 ```
 
-To conduct different experiments, you can change the index of the 'experiments' list from 0 to 5. Each index corresponds to a different experiment setup defined in the 'experiments' list.    
+To conduct different experiments, you can change the index of the 'experiments' list from 0 to 5. Each index corresponds to a different experiment setup defined in the 'experiments' list.
 Simply set ```root_dir``` to the desired experiment by changing the index, for example:  
 ```root_dir = experiments[0]```  # This will set the root directory to the first experiment.  
 ```root_dir = experiments[1]```  # This will set the root directory to the second experiment, and so on up to index 5.  
-
 
 ## Cite the Original Work
 

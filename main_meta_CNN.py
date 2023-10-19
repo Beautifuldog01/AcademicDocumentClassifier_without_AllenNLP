@@ -1,21 +1,17 @@
 import os
 import datetime
 import argparse
-
 import torch
 import numpy as np
-from torch.utils.data import DataLoader
-
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-
-import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
+from torch.utils.data import DataLoader
 
-from dataset_pubmed import *
-from utils import *
+from model import TextClassifier, NonNegativePULoss
+from dataset_pubmed import make_PU_meta, BiDataset, BalancedBatchSampler
+from utils import (set_seed, build_vocab, getFeatures, get_metric, log_metrics, print_info)
 
 parser = argparse.ArgumentParser(description='Run Text Classification Experiments')
 parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training')
@@ -24,6 +20,7 @@ parser.add_argument('--lr', type=float, default=0.001, help='Learning rate for t
 parser.add_argument('--prior', type=float, default=0.5, help='Prior probability for Non-Negative PU Loss')
 parser.add_argument('--embedding_dim', type=int, default=300, help='Embedding dimension for text classifier')
 parser.add_argument('--models_dir', type=str, default='models', help='Directory to save the models')
+parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility')
 args = parser.parse_args()
 
 batch_size = args.batch_size
@@ -32,6 +29,7 @@ learning_rate = args.lr
 prior = args.prior
 embedding_dim = args.embedding_dim
 models_dir = args.models_dir
+set_seed(args.seed)
 
 experiments = [
     "data/pubmed-dse/L50/D000328.D008875.D015658",
@@ -56,93 +54,12 @@ val_labels = all_df.query("ca == 1")["label"].values
 test_index = all_df.query("ts == 1").index
 test_labels = all_df.query("ts == 1")["label"].values
 
-
-class NonNegativePULoss(nn.Module):
-    def __init__(self, prior, positive_class=1, loss=None, gamma=1, beta=0, nnpu=True):
-        super(NonNegativePULoss, self).__init__()
-        self.prior = prior
-        self.gamma = gamma
-        self.beta = beta
-        self.loss = loss or (lambda x: torch.sigmoid(-x))
-        self.nnPU = nnpu
-        self.positive = positive_class
-        self.unlabeled = 1 - positive_class
-
-    def forward(self, x, t):
-        t = t[:, None]
-        positive, unlabeled = (t == self.positive).float(), (
-            t == self.unlabeled
-        ).float()
-        n_positive, n_unlabeled = max(1.0, positive.sum().item()), max(
-            1.0, unlabeled.sum().item()
-        )
-
-        y_positive = self.loss(x)  # per sample positive risk
-        y_unlabeled = self.loss(-x)  # per sample negative risk
-
-        positive_risk = torch.sum(self.prior * positive / n_positive * y_positive)
-        negative_risk = torch.sum(
-            (unlabeled / n_unlabeled - self.prior * positive / n_positive) * y_unlabeled
-        )
-
-        if self.nnPU:
-            if negative_risk.item() < -self.beta:
-                objective = (
-                    positive_risk - self.beta + self.gamma * negative_risk
-                ).detach() - self.gamma * negative_risk
-            else:
-                objective = positive_risk + negative_risk
-        else:
-            objective = positive_risk + negative_risk
-
-        return objective
-
-
 all_df["combined_text"] = all_df["title"] + " " + all_df["abstract"]
 all_texts = all_df["combined_text"].tolist()
 vocab = build_vocab(all_texts)
 word_to_index = {word: index for index, word in enumerate(vocab)}
 all_features = getFeatures(all_df, word_to_index, max_length=500)
 
-
-class TextClassifier(nn.Module):
-    def __init__(self, vocab_size, embedding_dim):
-        super(TextClassifier, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, embedding_dim)
-        self.title_cnn_3 = nn.Conv1d(embedding_dim, 50, 3, padding=1)
-        self.title_cnn_5 = nn.Conv1d(embedding_dim, 50, 5, padding=2)
-        self.abstract_cnn_3 = nn.Conv1d(embedding_dim, 100, 3, padding=1)
-        self.abstract_cnn_5 = nn.Conv1d(embedding_dim, 100, 5, padding=2)
-        self.classifier = nn.Linear(300, 1)
-
-    def forward(self, title, abstract):
-        title_embed = self.embedding(title)
-        abstract_embed = self.embedding(abstract)
-        title_features_3 = F.relu(self.title_cnn_3(title_embed.permute(0, 2, 1)))
-        title_features_5 = F.relu(self.title_cnn_5(title_embed.permute(0, 2, 1)))
-        abstract_features_3 = F.relu(
-            self.abstract_cnn_3(abstract_embed.permute(0, 2, 1))
-        )
-        abstract_features_5 = F.relu(
-            self.abstract_cnn_5(abstract_embed.permute(0, 2, 1))
-        )
-        title_features_3 = F.max_pool1d(
-            title_features_3, title_features_3.size(2)
-        ).squeeze(2)
-        title_features_5 = F.max_pool1d(
-            title_features_5, title_features_5.size(2)
-        ).squeeze(2)
-        abstract_features_3 = F.max_pool1d(
-            abstract_features_3, abstract_features_3.size(2)
-        ).squeeze(2)
-        abstract_features_5 = F.max_pool1d(
-            abstract_features_5, abstract_features_5.size(2)
-        ).squeeze(2)
-        title_features = torch.cat([title_features_3, title_features_5], dim=1)
-        abstract_features = torch.cat([abstract_features_3, abstract_features_5], dim=1)
-        combined_features = torch.cat([title_features, abstract_features], dim=1)
-        output = self.classifier(combined_features)
-        return output
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -184,7 +101,7 @@ for epoch in tqdm(range(num_epochs)):
         content = content.to(device)
         labels = labels.to(device)
         outputs = model(content[:, 0, :], content[:, 1, :])
-        loss = criterion(outputs.squeeze(), labels.float())
+        loss = loss_fct(outputs.squeeze(), labels.float())
         loss.backward()
         optimizer.step()
         total_loss += loss.item()

@@ -147,7 +147,7 @@ class TextClassifier(nn.Module):
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = TextClassifier(len(vocab), embedding_dim).to(device)
-criterion = nn.BCEWithLogitsLoss()
+loss_fct = NonNegativePULoss(prior=prior)
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 best_va_f1 = 0
 best_ts_f1 = 0
@@ -174,7 +174,6 @@ current_date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
 model_for_nnpu = os.path.join(model_for_nnpu, current_date)
 os.makedirs(model_for_nnpu, exist_ok=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-loss_fct = NonNegativePULoss(prior=prior)
 
 # Training loop
 for epoch in tqdm(range(num_epochs)):

@@ -73,8 +73,9 @@ writer = SummaryWriter("runs/nnPU_CNN")
 train_data = BiDataset(
     torch.tensor(all_features)[train_index], torch.tensor(train_labels)
 )
-train_sampler = BalancedBatchSampler(train_data)
+train_sampler = BalancedBatchSampler(train_data, batch_size=batch_size)
 train_loader = DataLoader(train_data, batch_size=batch_size, sampler=train_sampler)
+
 
 eval_dataset = BiDataset(torch.tensor(all_features)[val_index], val_labels)
 eval_dataloader = torch.utils.data.DataLoader(

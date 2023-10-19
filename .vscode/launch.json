@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: 当前文件",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--batch_size", "512", "--num_epochs", "100", "--embedding_dim", "50", "--max_length", "800", "--lr", "0.0001", "--prior", "0.5", "--seed", "42"]
+        }
+    ]
+}

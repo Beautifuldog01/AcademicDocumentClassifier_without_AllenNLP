@@ -122,7 +122,7 @@ class BiDataset_val(torch.utils.data.Dataset):
 
 
 class BalancedBatchSampler(Sampler):
-    def __init__(self, dataset):
+    def __init__(self, dataset, batch_size):
         self.dataset = dataset
         self.all_positive_indices = [
             i for i, label in enumerate(self.dataset.label) if label == 1
@@ -130,27 +130,25 @@ class BalancedBatchSampler(Sampler):
         self.all_negative_indices = [
             i for i, label in enumerate(self.dataset.label) if label == 0
         ]
+        self.batch_size = batch_size
 
     def __iter__(self):
+
         random.shuffle(self.all_positive_indices)
         random.shuffle(self.all_negative_indices)
+        total_batches = len(self.dataset) // self.batch_size
+        num_positive_per_batch = max(1, len(self.all_positive_indices) // total_batches)
+        num_repeat = total_batches * num_positive_per_batch // len(self.all_positive_indices)
+        remaining = total_batches * num_positive_per_batch % len(self.all_positive_indices)
+        self.all_positive_indices = self.all_positive_indices * num_repeat + random.sample(self.all_positive_indices, remaining)
 
-        len_smaller = min(
-            len(self.all_positive_indices), len(self.all_negative_indices)
-        )
-
-        for i in range(len_smaller):
-            yield self.all_positive_indices[i]
-            yield self.all_negative_indices[i]
-
-        remaining_indices = (
-            self.all_positive_indices[len_smaller:]
-            + self.all_negative_indices[len_smaller:]
-        )
-        random.shuffle(remaining_indices)
-
-        for i in remaining_indices:
-            yield i
+        for i in range(total_batches):
+            positive_indices = self.all_positive_indices[i * num_positive_per_batch: (i + 1) * num_positive_per_batch] 
+            negative_indices = random.sample(self.all_negative_indices, self.batch_size - len(positive_indices))
+            batch_indices = positive_indices + negative_indices
+            random.shuffle(batch_indices)
+            for index in batch_indices:
+                yield index
 
     def __len__(self):
         return len(self.dataset)

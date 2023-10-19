@@ -149,3 +149,64 @@ class BalancedBatchSampler(Sampler):
 
     def __len__(self):
         return len(self.dataset) // self.batch_size
+
+class ProportionalSampler(Sampler):
+    def __init__(self, dataset, batch_size, num_cycles):
+        self.dataset = dataset
+        self.batch_size = batch_size
+        self.num_cycles = num_cycles
+
+        self.all_positive_indices = [
+            i for i, label in enumerate(self.dataset.label) if label == 1
+        ]
+        self.all_negative_indices = [
+            i for i, label in enumerate(self.dataset.label) if label == 0
+        ]
+
+    def __iter__(self):
+        total_batches = len(self.dataset) // self.batch_size
+        smaller_class_len = min(len(self.all_positive_indices), len(self.all_negative_indices))
+        total_instances = len(self.all_positive_indices) + len(self.all_negative_indices)
+
+        # Calculate the number of positive samples per batch based on the ratio in the dataset
+        num_positive_per_batch = max(1, round((smaller_class_len / total_instances) * self.batch_size))
+        num_negative_per_batch = self.batch_size - num_positive_per_batch
+
+        # Backup for reusing samples from the smaller class
+        positive_backup = list(self.all_positive_indices)
+        negative_backup = list(self.all_negative_indices)
+
+        # Counter for the number of cycles the smaller class has been through
+        cycle_counter = self.num_cycles
+
+        for i in range(total_batches):
+            # Replenish the smaller class samples if necessary
+            if num_positive_per_batch > len(self.all_positive_indices):
+                random.shuffle(positive_backup)
+                self.all_positive_indices += positive_backup
+                cycle_counter -= 1
+
+            if num_negative_per_batch > len(self.all_negative_indices):
+                random.shuffle(negative_backup)
+                self.all_negative_indices += negative_backup
+                cycle_counter -= 1
+
+            if cycle_counter == 0:
+                break
+
+            # Create a balanced batch
+            positive_indices = random.sample(self.all_positive_indices, num_positive_per_batch)
+            self.all_positive_indices = [x for x in self.all_positive_indices if x not in positive_indices]
+
+            negative_indices = random.sample(self.all_negative_indices, num_negative_per_batch)
+            self.all_negative_indices = [x for x in self.all_negative_indices if x not in negative_indices]
+
+            batch_indices = positive_indices + negative_indices
+            random.shuffle(batch_indices)
+
+            for index in batch_indices:
+                yield index
+
+    def __len__(self):
+        return len(self.dataset) // self.batch_size
+

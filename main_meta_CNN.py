@@ -8,9 +8,10 @@ import matplotlib.pyplot as plt
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
+from torch.nn import BCEWithLogitsLoss
 
 from model import TextClassifier, NonNegativePULoss
-from dataset_pubmed import make_PU_meta, BiDataset, BalancedBatchSampler
+from dataset_pubmed import make_PU_meta, BiDataset, BalancedBatchSampler, ProportionalSampler
 from utils import (set_seed, build_vocab, getFeatures, get_metric, log_metrics, print_info)
 
 parser = argparse.ArgumentParser(description='Run Text Classification Experiments')
@@ -41,7 +42,7 @@ experiments = [
     "data/pubmed-dse/L20/D006435.D007676.D008875",
 ]
 
-root_dir = experiments[0]
+root_dir = experiments[1]
 
 tr_file_path = os.path.join(root_dir, "train.jsonl")
 va_file_path = os.path.join(root_dir, "valid.jsonl")
@@ -66,6 +67,7 @@ all_features = getFeatures(all_df, word_to_index, max_length=max_length)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = TextClassifier(len(vocab), embedding_dim).to(device)
 loss_fct = NonNegativePULoss(prior=prior)
+# loss_fct = BCEWithLogitsLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 best_va_f1 = 0
 best_ts_f1 = 0
@@ -73,9 +75,8 @@ writer = SummaryWriter("runs/nnPU_CNN")
 train_data = BiDataset(
     torch.tensor(all_features)[train_index], torch.tensor(train_labels)
 )
-train_sampler = BalancedBatchSampler(train_data, batch_size=batch_size)
+train_sampler = ProportionalSampler(train_data, batch_size=batch_size, num_cycles=1)
 train_loader = DataLoader(train_data, batch_size=batch_size, sampler=train_sampler)
-
 
 eval_dataset = BiDataset(torch.tensor(all_features)[val_index], val_labels)
 eval_dataloader = torch.utils.data.DataLoader(

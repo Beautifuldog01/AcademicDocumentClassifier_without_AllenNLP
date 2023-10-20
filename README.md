@@ -20,7 +20,8 @@ I have only transcribed the implementation of the nnPU model training and the 'p
 This implementation diverges from the original repository in key ways:
 
 1. The entire code is based on PyTorch instead of AllenNLP.
-2. The text encoder is implemented using Convolutional Neural Networks (CNN) via the nltk and PyTorch libraries.  
+2. The text encoder is implemented using Convolutional Neural Networks (CNN) via the nltk and PyTorch libraries.
+   
 Data file follows like this below.
 ```
 └── pubmed-dse

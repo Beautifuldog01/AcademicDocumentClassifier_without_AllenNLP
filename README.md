@@ -102,7 +102,7 @@ git clone https://github.com/Beautifuldog01/AcademicDocumentClassifier_without_A
 cd AcademicDocumentClassifier_without_AllenNLP
 ```
 
-Then cd to the directory and run:
+Then run:
 
 ```
 python main_meta_CNN.py  --batch_size 512 --num_epochs 100 --embedding_dim 50 --max_length 800 --lr 0.0001 --prior 0.5 --seed 42

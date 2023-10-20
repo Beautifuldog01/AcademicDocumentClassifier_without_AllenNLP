@@ -21,13 +21,45 @@ This implementation diverges from the original repository in key ways:
 
 1. The entire code is based on PyTorch instead of AllenNLP.
 2. The text encoder is implemented using Convolutional Neural Networks (CNN) via the nltk and PyTorch libraries.  
-Data file follows like this below.  
-   <img width="396" alt="image" src="https://github.com/Beautifuldog01/AcademicDocumentClassifier_without_AllenNLP/assets/40363660/45d39ced-85a4-461f-a54e-1bd08a096184">  
+Data file follows like this below.
+```
+└── pubmed-dse
+    ├── L20
+    │   ├── D000328.D008875.D015658
+    │   ├── D000368.D008875.D010535
+    │   ├── D000818.D001921.D051381
+    │   ├── D001483.D008969.D011401
+    │   ├── D001921.D008279.D008875
+    │   ├── D002478.D008810.D051379
+    │   ├── D004195.D017207.D051381
+    │   ├── D004305.D017207.D051381
+    │   ├── D005260.D007231.D011247
+    │   ├── D006435.D007676.D008875
+    │   ├── D008099.D011919.D051381
+    │   ├── D008207.D008875.D009367
+    │   ├── D008969.D010802.D016415
+    │   └── D017209.D045744.D049109
+    └── L50
+        ├── D000328.D008875.D015658
+        ├── D000368.D008875.D010535
+        ├── D000818.D001921.D051381
+        ├── D001483.D008969.D011401
+        ├── D001921.D008279.D008875
+        ├── D002478.D008810.D051379
+        ├── D004195.D017207.D051381
+        ├── D004305.D017207.D051381
+        ├── D005260.D007231.D011247
+        ├── D006435.D007676.D008875
+        ├── D008099.D011919.D051381
+        ├── D008207.D008875.D009367
+        ├── D008969.D010802.D016415
+        └── D017209.D045744.D049109
+```
 
 By runing ```tree -L 2``` command, you can see the directory structure like this below.  
 
 ```
-(py310tc2) ➜  AcademicDocumentClassifier_without_AllenNLP git:(main) tree -L 2
+AcademicDocumentClassifier_without_AllenNLP git:(main) tree -L 2
 .
 ├── data
 │   └── pubmed-dse

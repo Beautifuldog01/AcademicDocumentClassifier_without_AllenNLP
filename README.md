@@ -21,7 +21,7 @@ This implementation diverges from the original repository in key ways:
 
 1. The entire code is based on PyTorch instead of AllenNLP.
 2. The text encoder is implemented using Convolutional Neural Networks (CNN) via the nltk and PyTorch libraries.
-3. 'Proportional_iterator' trick in my implementation is different from the original one. I have implemented a new 'proportional_iterator' named ```ProportionalSampler``` in the dataset_pubmed.py file which can be used as a sampler when creating a training dataloader.
+3. 'Proportional_iterator' trick in my implementation is logically consistent. I have implemented a new 'proportional_iterator' named ```ProportionalSampler``` in the dataset_pubmed.py file which can be used as a sampler when creating a training dataloader.
 4. You can find the settings of hyperparameters  in [Alon's repository](https://github.com/alonjacovi/document-set-expansion-pu), which is something like ```dse/experiments/nnpu_D000818.D001921.D051381.jsonnet```.
 5. TODOS:  
     - [ ] Add the grad_clipping.

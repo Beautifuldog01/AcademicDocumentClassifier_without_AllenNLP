@@ -155,7 +155,7 @@ for epoch in tqdm(range(num_epochs)):
         # plt.legend(loc='upper right')
         # plt.title('Score Distribution for Test Set')
         # plt.show()
-print_info(npuu_test_info_tuple)
+
 torch.save(
     best_model_state,
     os.path.join(model_for_nnpu, f"npuu_model_best_test_f1_{best_ts_f1:.3f}.pth"),

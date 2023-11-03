@@ -4,7 +4,6 @@ import argparse
 import torch
 import numpy as np
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
@@ -14,7 +13,7 @@ from model import TextClassifier, NonNegativePULoss
 from dataset_pubmed import (
     make_PU_meta,
     BiDataset,
-    BalancedBatchSampler,
+    BalancedBatchSampler,   
     ProportionalSampler,
 )
 from utils import (

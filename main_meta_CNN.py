@@ -11,18 +11,52 @@ from torch.utils.data import DataLoader
 from torch.nn import BCEWithLogitsLoss
 
 from model import TextClassifier, NonNegativePULoss
-from dataset_pubmed import make_PU_meta, BiDataset, BalancedBatchSampler, ProportionalSampler
-from utils import (set_seed, build_vocab, getFeatures, get_metric, log_metrics, print_info)
+from dataset_pubmed import (
+    make_PU_meta,
+    BiDataset,
+    BalancedBatchSampler,
+    ProportionalSampler,
+)
+from utils import (
+    set_seed,
+    build_vocab,
+    getFeatures,
+    get_metric,
+    log_metrics,
+    print_info,
+)
 
-parser = argparse.ArgumentParser(description='Run Text Classification Experiments')
-parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training')
-parser.add_argument('--num_epochs', type=int, default=50, help='Number of training epochs')
-parser.add_argument('--lr', type=float, default=0.001, help='Learning rate for the optimizer')
-parser.add_argument('--prior', type=float, default=0.5, help='Prior probability for Non-Negative PU Loss')
-parser.add_argument('--max_length', type=int, default=800, help='Maximum length of the input sequence')
-parser.add_argument('--embedding_dim', type=int, default=50, help='Embedding dimension for text classifier')
-parser.add_argument('--models_dir', type=str, default='models', help='Directory to save the models')
-parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility')
+parser = argparse.ArgumentParser(description="Run Text Classification Experiments")
+parser.add_argument(
+    "--batch_size", type=int, default=128, help="Batch size for training"
+)
+parser.add_argument(
+    "--num_epochs", type=int, default=50, help="Number of training epochs"
+)
+parser.add_argument(
+    "--lr", type=float, default=0.001, help="Learning rate for the optimizer"
+)
+parser.add_argument(
+    "--prior",
+    type=float,
+    default=0.5,
+    help="Prior probability for Non-Negative PU Loss",
+)
+parser.add_argument(
+    "--max_length", type=int, default=800, help="Maximum length of the input sequence"
+)
+parser.add_argument(
+    "--embedding_dim",
+    type=int,
+    default=50,
+    help="Embedding dimension for text classifier",
+)
+parser.add_argument(
+    "--models_dir", type=str, default="models", help="Directory to save the models"
+)
+parser.add_argument(
+    "--seed", type=int, default=42, help="Random seed for reproducibility"
+)
 args = parser.parse_args()
 
 batch_size = args.batch_size
@@ -136,6 +170,12 @@ for epoch in tqdm(range(num_epochs)):
         # print("<<<<<<TEST>>>>>>")
         # print_info(npuu_test_info_tuple)
         best_model_state = model.state_dict()
+        torch.save(
+            best_model_state,
+            os.path.join(
+                model_for_nnpu, f"npuu_model_best_test_f1_{best_ts_f1:.3f}.pth"
+            ),
+        )
         val_neg_scores = val_prob[val_labels == 0]
         val_pos_scores = val_prob[val_labels == 1]
 
@@ -156,9 +196,6 @@ for epoch in tqdm(range(num_epochs)):
         # plt.title('Score Distribution for Test Set')
         # plt.show()
 
-torch.save(
-    best_model_state,
-    os.path.join(model_for_nnpu, f"npuu_model_best_test_f1_{best_ts_f1:.3f}.pth"),
-)
+
 writer.close()
 print("===TRAIN NNPU END===")

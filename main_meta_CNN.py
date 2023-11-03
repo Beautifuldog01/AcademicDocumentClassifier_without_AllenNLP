@@ -1,15 +1,15 @@
-import argparse
-import datetime
 import os
-
-import numpy as np
+import datetime
+import argparse
 import torch
-import torch.optim as optim
-from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
+import numpy as np
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
+from torch.utils.data import DataLoader
+from torch.nn import BCEWithLogitsLoss
 
-from dataset_pubmed import make_PU_meta, BiDataset, ProportionalSampler
 from model import TextClassifier, NonNegativePULoss
 from dataset_pubmed import (
     make_PU_meta,
@@ -68,12 +68,12 @@ models_dir = args.models_dir
 set_seed(args.seed)
 
 experiments = [
-    "/Users/badudu/cqyzz/dataset/pubmed-dse/L50/D000328.D008875.D015658",
-    "/Users/badudu/cqyzz/dataset/pubmed-dse/L50/D000818.D001921.D051381",
-    "/Users/badudu/cqyzz/dataset/pubmed-dse/L50/D006435.D007676.D008875",
-    "/Users/badudu/cqyzz/dataset/pubmed-dse/L20/D000328.D008875.D015658",
-    "/Users/badudu/cqyzz/dataset/pubmed-dse/L20/D000818.D001921.D051381",
-    "/Users/badudu/cqyzz/dataset/pubmed-dse/L20/D006435.D007676.D008875",
+    "data/pubmed-dse/L50/D000328.D008875.D015658",
+    "data/pubmed-dse/L50/D000818.D001921.D051381",
+    "data/pubmed-dse/L50/D006435.D007676.D008875",
+    "data/pubmed-dse/L20/D000328.D008875.D015658",
+    "data/pubmed-dse/L20/D000818.D001921.D051381",
+    "data/pubmed-dse/L20/D006435.D007676.D008875",
 ]
 
 root_dir = experiments[1]
@@ -96,6 +96,7 @@ vocab = build_vocab(all_texts)
 word_to_index = {word: index for index, word in enumerate(vocab)}
 max_length = args.max_length
 all_features = getFeatures(all_df, word_to_index, max_length=max_length)
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = TextClassifier(len(vocab), embedding_dim).to(device)
@@ -169,6 +170,12 @@ for epoch in tqdm(range(num_epochs)):
         # print("<<<<<<TEST>>>>>>")
         # print_info(npuu_test_info_tuple)
         best_model_state = model.state_dict()
+        torch.save(
+            best_model_state,
+            os.path.join(
+                model_for_nnpu, f"npuu_model_best_test_f1_{best_ts_f1:.3f}.pth"
+            ),
+        )
         val_neg_scores = val_prob[val_labels == 0]
         val_pos_scores = val_prob[val_labels == 1]
 

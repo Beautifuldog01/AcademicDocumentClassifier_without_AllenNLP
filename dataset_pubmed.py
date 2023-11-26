@@ -195,7 +195,9 @@ class ProportionalSampler(Sampler):
                 break
 
             # Create a balanced batch
-            positive_indices = random.sample(self.all_positive_indices, num_positive_per_batch)
+            num_positive_per_batch = min(num_positive_per_batch, len(self.all_positive_indices))
+            if num_positive_per_batch > 0:
+                positive_indices = random.sample(self.all_positive_indices, num_positive_per_batch)
             self.all_positive_indices = [x for x in self.all_positive_indices if x not in positive_indices]
 
             negative_indices = random.sample(self.all_negative_indices, num_negative_per_batch)

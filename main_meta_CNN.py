@@ -13,7 +13,7 @@ from model import TextClassifier, NonNegativePULoss
 from dataset_pubmed import (
     make_PU_meta,
     BiDataset,
-    BalancedBatchSampler,   
+    BalancedBatchSampler,
     ProportionalSampler,
 )
 from utils import (
@@ -109,7 +109,9 @@ train_data = BiDataset(
     torch.tensor(all_features)[train_index], torch.tensor(train_labels)
 )
 train_sampler = ProportionalSampler(train_data, batch_size=batch_size, num_cycles=1)
-train_loader = DataLoader(train_data, batch_size=batch_size, sampler=train_sampler, drop_last=True)
+train_loader = DataLoader(
+    train_data, batch_size=batch_size, sampler=train_sampler, drop_last=True
+)
 
 eval_dataset = BiDataset(torch.tensor(all_features)[val_index], val_labels)
 eval_dataloader = torch.utils.data.DataLoader(

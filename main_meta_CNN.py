@@ -127,7 +127,6 @@ model_for_nnpu = os.path.join(models_dir, "nnPUCNN")
 current_date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
 model_for_nnpu = os.path.join(model_for_nnpu, current_date)
 os.makedirs(model_for_nnpu, exist_ok=True)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training loop
 for epoch in tqdm(range(num_epochs)):

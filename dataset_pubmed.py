@@ -30,7 +30,7 @@ def load_data(
 
     with open(file_path, "r") as data_file:
         for line in data_file:
-            if limit > 0 and count >= limit:
+            if 0 < limit <= count:
                 break
             pubmed_json = json.loads(line)
             title, abstract, true_label, PU_label = parse_pubmed_json(pubmed_json)
@@ -97,9 +97,9 @@ class BiDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.data)
 
-    def normalization(data):
-        _range = np.max(data) - np.min(data)
-        return (data - np.min(data)) / _range
+    def normalization(self):
+        _range = np.max(self.data) - np.min(self.data)
+        return (self.data - np.min(self.data)) / _range
 
 
 class BiDataset_val(torch.utils.data.Dataset):
@@ -114,9 +114,9 @@ class BiDataset_val(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.data)
 
-    def normalization(data):
-        _range = np.max(data) - np.min(data)
-        return (data - np.min(data)) / _range
+    def normalization(self):
+        _range = np.max(self.data) - np.min(self.data)
+        return (self.data - np.min(self.data)) / _range
 
 
 class BalancedBatchSampler(Sampler):
@@ -165,69 +165,45 @@ class ProportionalSampler(Sampler):
             i for i, label in enumerate(self.dataset.label) if label == 0
         ]
 
-        self.total_instances = len(self.all_positive_indices) + len(
-            self.all_negative_indices
+        self.total_instances = len(self.all_positive_indices) + len(self.all_negative_indices)
+        self.smaller_class, self.larger_class = (
+            (set(self.all_positive_indices), set(self.all_negative_indices))
+            if len(self.all_positive_indices) < len(self.all_negative_indices)
+            else (set(self.all_negative_indices), set(self.all_positive_indices))
         )
 
     def __iter__(self):
-        total_batches = len(self.dataset) // self.batch_size
-        smaller_class_len = min(
-            len(self.all_positive_indices), len(self.all_negative_indices)
-        )
-
-        # Calculate the number of positive samples per batch based on the ratio in the dataset
-        num_positive_per_batch = max(
-            1, round((smaller_class_len / self.total_instances) * self.batch_size)
-        )
-        num_negative_per_batch = self.batch_size - num_positive_per_batch
-
-        # Backup for reusing samples from the smaller class
-        positive_backup = list(self.all_positive_indices)
-        negative_backup = list(self.all_negative_indices)
-
-        # Counter for the number of cycles the smaller class has been through
         cycle_counter = self.num_cycles
+        total_batches = len(self.dataset) // self.batch_size
+        used_smaller_class_indices = set()
 
-        for i in range(total_batches):
-            # Replenish the smaller class samples if necessary
-            if num_positive_per_batch > len(self.all_positive_indices):
-                random.shuffle(positive_backup)
-                self.all_positive_indices += positive_backup
-                cycle_counter -= 1
-
-            if num_negative_per_batch > len(self.all_negative_indices):
-                random.shuffle(negative_backup)
-                self.all_negative_indices += negative_backup
-                cycle_counter -= 1
-
-            if cycle_counter == 0:
-                break
-
-            # Create a balanced batch
-            num_positive_per_batch = min(
-                num_positive_per_batch, len(self.all_positive_indices)
-            )
-            if num_positive_per_batch > 0:
-                positive_indices = random.sample(
-                    self.all_positive_indices, num_positive_per_batch
+        for _ in range(total_batches):
+            if cycle_counter > 0:
+                num_smaller_per_batch = max(
+                    1, round((len(self.smaller_class) / self.total_instances) * self.batch_size)
                 )
-            self.all_positive_indices = [
-                x for x in self.all_positive_indices if x not in positive_indices
-            ]
+                
+                if len(self.smaller_class) - len(used_smaller_class_indices) < num_smaller_per_batch:
+                    used_smaller_class_indices = set()
+                
+                available_smaller_class_indices = list(self.smaller_class - used_smaller_class_indices)
+                smaller_class_indices = random.sample(available_smaller_class_indices, num_smaller_per_batch)
+                used_smaller_class_indices.update(smaller_class_indices)
+                
+                num_larger_per_batch = self.batch_size - num_smaller_per_batch
+                larger_class_indices = random.sample(list(self.larger_class), num_larger_per_batch)
+                
+                batch_indices = smaller_class_indices + larger_class_indices
+                random.shuffle(batch_indices)
+                
+                if len(used_smaller_class_indices) == len(self.smaller_class):
+                    cycle_counter -= 1
+                    used_smaller_class_indices = set()
 
-            num_negative_per_batch = min(
-                num_negative_per_batch, len(self.all_negative_indices)
-            )
-            if num_negative_per_batch > 0:
-                negative_indices = random.sample(
-                    self.all_negative_indices, num_negative_per_batch
+            else:
+                batch_indices = random.sample(
+                    list(self.smaller_class) + list(self.larger_class), self.batch_size
                 )
-            self.all_negative_indices = [
-                x for x in self.all_negative_indices if x not in negative_indices
-            ]
-
-            batch_indices = positive_indices + negative_indices
-            random.shuffle(batch_indices)
 
             for index in batch_indices:
                 yield index

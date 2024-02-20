@@ -7,13 +7,11 @@ from tqdm import tqdm
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
-from torch.nn import BCEWithLogitsLoss
 
 from model import TextClassifier, NonNegativePULoss
 from dataset_pubmed import (
     make_PU_meta,
     BiDataset,
-    BalancedBatchSampler,
     ProportionalSampler,
 )
 from utils import (
@@ -22,10 +20,10 @@ from utils import (
     getFeatures,
     get_metric,
     log_metrics,
-    print_info,
 )
 
-parser = argparse.ArgumentParser(description="Run Text Classification Experiments")
+parser = argparse.ArgumentParser(
+    description="Run Text Classification Experiments")
 parser.add_argument(
     "--batch_size", type=int, default=128, help="Batch size for training"
 )
@@ -108,7 +106,8 @@ writer = SummaryWriter("runs/nnPU_CNN")
 train_data = BiDataset(
     torch.tensor(all_features)[train_index], torch.tensor(train_labels)
 )
-train_sampler = ProportionalSampler(train_data, batch_size=batch_size, num_cycles=1)
+train_sampler = ProportionalSampler(
+    train_data, batch_size=batch_size, num_cycles=1)
 train_loader = DataLoader(
     train_data, batch_size=batch_size, sampler=train_sampler, drop_last=True
 )
@@ -164,7 +163,8 @@ for epoch in tqdm(range(num_epochs)):
             test_outputs = model(test_content[:, 0, :], test_content[:, 1, :])
             test_prob.append(test_outputs.squeeze().cpu().numpy())
     test_prob = np.hstack(test_prob)
-    npuu_test_info_tuple = get_metric(test_labels, test_prob, npuu_val_threshold99)
+    npuu_test_info_tuple = get_metric(
+        test_labels, test_prob, npuu_val_threshold99)
     log_metrics(writer, "Test", npuu_test_info_tuple, epoch)
     if npuu_test_info_tuple[3] > best_ts_f1:
         best_ts_f1 = npuu_test_info_tuple[3]
